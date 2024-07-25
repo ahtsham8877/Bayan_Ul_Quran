@@ -1,6 +1,7 @@
 import 'package:bayanulquran/Controller/Databinding/AllControllers.dart';
 import 'package:bayanulquran/DatabaseHelper/DatabaseHelper.dart';
 import 'package:bayanulquran/Utilties/Fonts/Fonts.dart';
+import 'package:bayanulquran/View/Ayat/AyatTranslation/AyatTranslation.dart';
 import 'package:bayanulquran/View/SaplashSc/SaplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,11 +22,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       getPages: [
-        GetPage(
-          name: '/',
-          binding: DateBinding(),
-          page: () => SaplashScreen(),
-        ),
+        GetPage(name: '/', binding: DateBinding(), page: () => SaplashScreen()),
       ],
     );
   }

@@ -147,7 +147,7 @@ class Homepage extends StatelessWidget {
                   Directionality(
                     textDirection: TextDirection.rtl,
                     child: Text(
-                      "شعبہ تحقیق اسلامی\nمرکذي انجمن خدام القرآن \n 36-k ماڈل ٹاؤن لاہور ",
+                      "شعبہ تحقیق اسلامی\n انجمن خدام القرآن \n 36-k ماڈل ٹاؤن لاہور ",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontFamily: mainfont,

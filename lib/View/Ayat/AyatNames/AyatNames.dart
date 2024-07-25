@@ -73,6 +73,7 @@ class Ayatnames extends StatelessWidget {
                       print(
                           "Ayat names in view ${data['listofIDs']} and surah num ${data['suratnumber']} ");
                       if (ShowAyats) {
+                        controller.update();
                         Get.to(() => Ayatnumbers(
                               surahId: suratID,
                               pageTitle: suratName,
@@ -81,6 +82,7 @@ class Ayatnames extends StatelessWidget {
                               title: data['surahNum']!,
                             ));
                       } else {
+                        controller.update();
                         Get.to(() => Ayatsview(
                               surahId: suratID,
                               title: suratName,

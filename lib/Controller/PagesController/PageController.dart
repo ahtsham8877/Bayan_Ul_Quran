@@ -10,7 +10,7 @@ class AyatPageController extends GetxController {
 
   RxDouble fontSize = 11.0.obs;
 
-  RxDouble pagefontSize = 1.0.obs;
+  RxDouble pagefontSize = 0.0.obs;
   @override
   void onInit() {
     loadSurahs();

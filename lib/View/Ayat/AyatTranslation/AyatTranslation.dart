@@ -12,6 +12,8 @@ import 'package:bayanulquran/View/Ayat/AyatView/AyatsView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:get/get.dart';
+import 'package:html/parser.dart' as html_parser;
+import 'package:html/dom.dart' as dom;
 
 class Ayattranslation extends StatefulWidget {
   final List<String> pagesdata;
@@ -47,6 +49,7 @@ class _AyattranslationState extends State<Ayattranslation> {
 
   final BookmarksController bookmarksController =
       Get.put(BookmarksController());
+  final AyatPageController controller = Get.find<AyatPageController>();
 
   @override
   void initState() {
@@ -74,8 +77,6 @@ class _AyattranslationState extends State<Ayattranslation> {
     pageController.dispose();
     super.dispose();
   }
-
-  final AyatPageController controller = Get.find<AyatPageController>();
 
   Future<void> checkBookmarkStatus() async {
     DatabaseHelper databaseHelper = DatabaseHelper();
@@ -139,6 +140,31 @@ class _AyattranslationState extends State<Ayattranslation> {
     }
   }
 
+  String modifyFontSize(String content, double fontSizeOffset) {
+    final highlightedText = '<div style="text-align: justify;">$content</div>';
+    dom.Document document = html_parser.parse(highlightedText);
+
+    document.body!.querySelectorAll('*').forEach((element) {
+      final hasFontSize =
+          element.attributes['style']?.contains('font-size') ?? false;
+      if (hasFontSize) {
+        final style = element.attributes['style']!;
+        final fontSizeRegex = RegExp(r'font-size:\s*(\d+)px');
+        final match = fontSizeRegex.firstMatch(style);
+        if (match != null) {
+          final fontSizeValue = double.tryParse(match.group(1)!) ?? 0;
+          final newFontSize = (fontSizeValue + fontSizeOffset).toInt();
+          element.attributes['style'] = style.replaceAll(
+            fontSizeRegex,
+            'font-size: ${newFontSize}px',
+          );
+        }
+      }
+    });
+
+    return document.body!.outerHtml;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -148,7 +174,7 @@ class _AyattranslationState extends State<Ayattranslation> {
         appBar: AppBar(
           title: Row(
             children: [
-              SizedBox(width: 90),
+              SizedBox(width: 60),
               Text(
                 widget.title is List ? widget.title[setIndex] : widget.title,
                 style: TextStyle(color: Colors.white, fontFamily: noorehuda),
@@ -159,6 +185,34 @@ class _AyattranslationState extends State<Ayattranslation> {
               const IconThemeData(color: Color.fromARGB(255, 255, 242, 183)),
           backgroundColor: mainColor,
           actions: [
+            IconButton(
+              onPressed: () {
+                Get.defaultDialog(
+                  title: "",
+                  contentPadding: const EdgeInsets.all(0),
+                  titlePadding: const EdgeInsets.all(0),
+                  content: Obx(() => Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: Column(
+                          children: [
+                            Text(
+                                "FontSize: ${controller.pagefontSize.value.toInt() + 10}"),
+                            Slider(
+                              value: controller.pagefontSize.value,
+                              min: 0,
+                              max: 20,
+                              onChanged: (newValue) {
+                                controller.pagefontSize(newValue);
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        ),
+                      )),
+                );
+              },
+              icon: const Icon(Icons.text_fields),
+            ),
             const SizedBox(width: 16),
             InkWell(
               onTap: () async {
@@ -178,8 +232,7 @@ class _AyattranslationState extends State<Ayattranslation> {
                               bookmarksController.folderNames[folderId]);
                         },
                         onCreateNewFolder: () {
-                          print(
-                              'Create new folder logic here'); // Create folder logic here
+                          print('Create new folder logic here');
                         },
                       ),
                     );
@@ -281,15 +334,17 @@ class _AyattranslationState extends State<Ayattranslation> {
 
                     if (widget.serchingContent != null) {
                       content = controller.highlightMatches(
-                          content, widget.serchingContent!);
+                        content,
+                        widget.serchingContent!,
+                      );
                     }
 
-                    final helitedtext =
-                        '<div style="text-align: justify;">$content</div>';
+                    final modifiedContent =
+                        modifyFontSize(content, controller.pagefontSize.value);
 
                     return SingleChildScrollView(
                       child: HtmlWidget(
-                        helitedtext,
+                        modifiedContent,
                         customStylesBuilder: (element) {
                           return {
                             'line-height': '2.1',
@@ -305,7 +360,7 @@ class _AyattranslationState extends State<Ayattranslation> {
                     checkBookmarkStatus();
                   },
                 ),
-              ),
+              )
             ],
           ),
         ),
@@ -315,61 +370,16 @@ class _AyattranslationState extends State<Ayattranslation> {
 }
 
 
-
-
- // IconButton(
-            //           onPressed: () {
-            //             Get.defaultDialog(
-            //               title: "",
-            //               contentPadding: const EdgeInsets.all(0),
-            //               titlePadding: const EdgeInsets.all(0),
-            //               content: Obx(() => Directionality(
-            //                     textDirection: TextDirection.rtl,
-            //                     child: Column(
-            //                       children: [
-            //                         Text(
-            //                             "FontSize: ${controller.pagefontSize.value.toInt()}"),
-            //                         Slider(
-            //                           value: controller.pagefontSize.value,
-            //                           min: 0,
-            //                           max: 10,
-            //                           onChanged: (newValue) {
-            //                             controller.pagefontSize(newValue);
-            //                           },
-            //                         ),
-            //                       ],
-            //                     ),
-            //                   )),
-            //             );
-            //           },
-            //           icon: const Icon(Icons.text_fields),
-            //         ),
-
-
-
-
-                    // dom.Document document = html_parser.parse(content);
-
-                    // document.body!.querySelectorAll('*').forEach((element) {
-                    //   final currentFontSize =
-                    //       element.attributes['style']?.contains('font-size') ??
-                    //           false;
-                    //   if (currentFontSize) {
-                    //     final style = element.attributes['style']!;
-                    //     final fontSizeRegex = RegExp(r'font-size:\s*(\d+)px');
-                    //     final match = fontSizeRegex.firstMatch(style);
-                    //     if (match != null) {
-                    //       final fontSizeValue =
-                    //           double.tryParse(match.group(1)!) ?? 0;
-                    //       final newFontSize =
-                    //           (fontSizeValue + controller.pagefontSize.value)
-                    //               .toInt();
-                    //       element.attributes['style'] = style.replaceAll(
-                    //         fontSizeRegex,
-                    //         'font-size: ${newFontSize}px',
-                    //       );
-                    //     }
-                    //   }
-                    // });
-
-                    // final modifiedContent = document.body!.outerHtml;
+                        // customWidgetBuilder: (element) {
+                          //   if (element.classes.contains("urdu-marker")) {
+                          //     return Text(
+                          //       element.text,
+                          //       style: TextStyle(
+                          //           fontSize: controller.fontSize.value + 10,
+                          //           fontFamily: Mehr_Nastaliq_Web),
+                          //     );
+                          //   } else {
+                          //     return null;
+                          //   }
+                          // },
+  

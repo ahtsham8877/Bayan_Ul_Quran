@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:bayanulquran/DatabaseHelper/DatabaseHelper.dart';
 import 'package:bayanulquran/Model/BookMarksModel.dart';
 
+/// this screen basically is not used in this code
+/// because its only use for get book marks with out folder
+/// if any body want use this they call its ant on tap '
+
 class BookmarkListWidget extends StatefulWidget {
   const BookmarkListWidget({Key? key});
 

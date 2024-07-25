@@ -22,7 +22,7 @@ class _BookmarksState extends State<Bookmarks> {
   BookmarksController bookmarksController = Get.put(BookmarksController());
   final AyatPageController controller = Get.find<AyatPageController>();
   int subIndexs = 0;
-  bool _isLoading = true; // Add this state variable
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -182,8 +182,7 @@ class _BookmarksState extends State<Bookmarks> {
         ),
         body: _isLoading
             ? Center(
-                child:
-                    CircularProgressIndicator(), // Show a loading indicator while loading
+                child: CircularProgressIndicator(),
               )
             : Obx(() {
                 return bookmarksController.folderNames.isEmpty
